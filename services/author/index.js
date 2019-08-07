@@ -15,20 +15,15 @@ module.exports = function (fastify, opts, next) {
                         ]
                     },
                     'age': {
-                        type: 'string',
-                        allOf: [
-                            { "minLength": 1 },
-                            { "maxLength": 3 }
-                        ]
+                        type: 'number'
                     },
                 },
                 required:['name','age']
             }
         },
         // preHandler : [fastify.verifySessionId],
-        handler: async function (request, reply) {
-           
-            fastify.createAuthor(request).then(d=>{
+        handler: async function (request, reply) {     
+            fastify.createAuthor(request.body.name,request.body.age).then(d=>{
                 return reply.send(d);
             }).catch(ex=>{
                 fastify.log.error(ex);
@@ -37,6 +32,23 @@ module.exports = function (fastify, opts, next) {
                 })
             })
         },
+    }),
+    fastify.route({
+        url: '/author/list',
+        method: 'GET',
+        schema: {
+            querystring: {
+                type: 'object',
+                properties: {
+                    
+                },
+                required:['name','age']
+            }
+        },
+        // preHandler : [fastify.verifySessionId],
+        handler: async function (request, reply) {     
+
+        }
     })
 
 next()
