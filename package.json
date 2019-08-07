@@ -16,9 +16,11 @@
   "license": "ISC",
   "dependencies": {
     "fastify": "^2.0.0",
-    "fastify-plugin": "^1.5.0",
     "fastify-autoload": "^0.6.0",
-    "fastify-cli": "^1.0.0"
+    "fastify-cli": "^1.0.0",
+    "fastify-plugin": "^1.5.0",
+    "mysql2": "^1.6.5",
+    "sequelize": "^5.12.3"
   },
   "devDependencies": {
     "tap": "^12.5.3"
