@@ -1,8 +1,35 @@
 const fp = require('fastify-plugin')
+const bcrypt = require('bcrypt')
 const uuid4 = require('uuid/v4')
 const moment = require('moment')
 
 module.exports = fp(function (fastify, opts, next) {
+ // define and export generatePasswordHash decorator
+ fastify.decorate('generatePasswordHash', function (inputString) {
+    return new Promise((resolve, reject) => {
+      bcrypt.hash(inputString, 8).then((res) => {
+        resolve(res)
+      }).catch((e) => {
+        reject()
+      })
+    })
+  })
+
+  // define and export comparePasswordHash decorator
+  fastify.decorate('comparePasswordHash', function (password, inputString) {
+    return new Promise((resolve, reject) => {
+      if (inputString == null) {
+        inputString = ''
+      }
+      bcrypt.compare(password, inputString).then((res) => {
+        resolve(res)
+      }).catch((e) => {
+        reject()
+      })
+    })
+  })
+
+ 
 
     fastify.decorate('verifySessionId', function (request, reply, done) {
         let sessionId = request.headers['x-session-id']
