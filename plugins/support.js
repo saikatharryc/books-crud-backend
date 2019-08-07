@@ -100,7 +100,7 @@ module.exports = fp(function (fastify, opts, next) {
 
   // TODO: implement pagination incase fetching all
 
-  fastify.decorate('listBook', (id) => {
+  fastify.decorate('listBooks', (id) => {
     if (id) {
       return fastify.sql.models.Book.findOne({ where: { id: id }, include: [{ model: fastify.sql.models.bookAuthor, include: [fastify.sql.models.Author] }, { model: fastify.sql.models.bookGenere, include: [fastify.sql.models.Genere] }] })
     } else {

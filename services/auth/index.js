@@ -156,7 +156,7 @@ module.exports = async function (fastify, opts, next) {
 
       try {
         // logout from specific session
-        if (request.body.ref != undefined) {
+        if (request.body.ref !== undefined) {
           // console.log('Target Invalidation')
           const sl = await fastify.sessionList(request['session'].userid)
           const fres = find(sl, function (o) {

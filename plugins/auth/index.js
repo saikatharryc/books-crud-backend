@@ -57,7 +57,7 @@ module.exports = fp(function (fastify, opts, next) {
   fastify.decorate('getSessionId', session_id => {
     return new Promise((resolve, reject) => {
       fastify.redis.get(session_id, function (err, result) {
-        if (result === null || err != null) {
+        if (result === null || err !== null) {
           reject('Session ID not found')
         } else {
           resolve(JSON.parse(result))
@@ -98,7 +98,7 @@ module.exports = fp(function (fastify, opts, next) {
         } else {
           const getResult = JSON.parse(result)
           fastify.redis.del(session_id, function (err, result) {
-            if (result === null && getResult != null) {
+            if (result === null && getResult !== null) {
               reject('Session ID not removed')
             }
             fastify.redis.smembers(getResult.userid, function (err, useridkey) {

@@ -30,5 +30,31 @@ module.exports = function (fastify, opts, next) {
     }
   })
 
+  fastify.route({
+    url: '/genere/list',
+    method: 'GET',
+    schema: {
+      querystring: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'number'
+          }
+        }
+      }
+    },
+    // preHandler : [fastify.verifySessionId],
+    handler: async (request, reply) => {
+      fastify.listGeneres(request.query.id).then(d => {
+        return reply.send(d)
+      }).catch(ex => {
+        fastify.log.error(ex)
+        return reply.status(500).send({
+          message: 'unknown error occured'
+        })
+      })
+    }
+  })
+
   next()
 }
