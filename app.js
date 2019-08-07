@@ -32,13 +32,13 @@ module.exports = function (fastify, opts, next) {
       ],
       securityDefinitions: {
         apiKey: {
-            type: 'apiKey',
-            name: 'x-session-id',
-            in: 'header',
-        },
-      },
+          type: 'apiKey',
+          name: 'x-session-id',
+          in: 'header'
+        }
+      }
     },
-exposeRoute:true,
+    exposeRoute: true
   })
   // This loads all plugins defined in services
   // define your routes in one of these
