@@ -49,8 +49,8 @@ module.exports = fp(function (fastify, opts, next) {
    * @param { String } description 
    * 
    */
-  fastify.decorate('createGenere', async( name, description)=>{
-    return await fastify.sql.models.Genere.create({name:name,description:description});
+  fastify.decorate('createGenere', ( name, description)=>{
+    return  fastify.sql.models.Genere.create({name:name,description:description});
   })
 
   /*
@@ -59,8 +59,8 @@ module.exports = fp(function (fastify, opts, next) {
    * @param { String } description 
    * 
    */
-  fastify.decorate('createAuthor', async( name, age)=>{
-    return await fastify.sql.models.Author.create({full_name:name,age:age});
+  fastify.decorate('createAuthor', ( name, age)=>{
+    return  fastify.sql.models.Author.create({full_name:name,age:age});
   })
 
 
