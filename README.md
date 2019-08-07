@@ -18,3 +18,5 @@ npm start
 ```shell
 pm2 start process.json
 ```
+
+Once Apllication starts in `development` Environment, go to `/documentation` for api docs.
