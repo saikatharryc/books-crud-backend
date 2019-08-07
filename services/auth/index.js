@@ -22,7 +22,8 @@ module.exports = async function (fastify, opts, next) {
                             { "maxLength": 20 }
                         ]
                     }
-                }
+                },
+                required:['username','password']
             }
         },
         handler: async function (request, reply) {
