@@ -17,7 +17,7 @@ module.exports = function (fastify, opts, next) {
         required: ['name', 'description']
       }
     },
-    // preHandler : [fastify.verifySessionId],
+    preHandler : [fastify.verifySessionId],
     handler: async function (request, reply) {
       fastify.createGenere(request.body.name, request.body.description).then(d => {
         return reply.send(d)
@@ -43,7 +43,7 @@ module.exports = function (fastify, opts, next) {
         }
       }
     },
-    // preHandler : [fastify.verifySessionId],
+    preHandler : [fastify.verifySessionId],
     handler: async (request, reply) => {
       fastify.listGeneres(request.query.id).then(d => {
         return reply.send(d)

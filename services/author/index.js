@@ -20,7 +20,7 @@ module.exports = function (fastify, opts, next) {
         required: ['name', 'age']
       }
     },
-    // preHandler : [fastify.verifySessionId],
+    preHandler : [fastify.verifySessionId],
     handler: async function (request, reply) {
       fastify.createAuthor(request.body.name, request.body.age).then(d => {
         return reply.send(d)
@@ -45,7 +45,7 @@ module.exports = function (fastify, opts, next) {
         }
       }
     },
-    // preHandler : [fastify.verifySessionId],
+    preHandler : [fastify.verifySessionId],
     handler: async (request, reply) => {
       fastify.listAuthors(request.query.id).then(d => {
         return reply.send(d)
