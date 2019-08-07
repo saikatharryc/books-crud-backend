@@ -38,7 +38,7 @@ module.exports = function(fastify, opts, next) {
         }
       }
     },
-    exposeRoute: true
+    exposeRoute: process.env["NODE_ENV"] == "development" ? true : false //dont expose if its not development
   });
   // This loads all plugins defined in services
   // define your routes in one of these
