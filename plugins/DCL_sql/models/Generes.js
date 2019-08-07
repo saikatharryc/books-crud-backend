@@ -17,6 +17,8 @@ module.exports= (sequelize, Sequelize) => {
 	Genere.associate = (models) => {
 		Genere.hasMany(models.bookGenere, {
 			foreignKey: 'genere_id',
+			onDelete:'CASCADE',
+			hooks: true
         });
 	}
 

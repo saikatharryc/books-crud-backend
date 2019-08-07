@@ -8,9 +8,11 @@ module.exports= (sequelize, Sequelize) => {
 	bookGenere.associate = (models) => {
         bookGenere.belongsTo(models.Genere, {
 			foreignKey: 'genere_id',
-        });
+			hooks: true
+		        });
         bookGenere.belongsTo(models.Book, {
 			foreignKey: 'book_id',
+			hooks: true
         });
 	}
 
