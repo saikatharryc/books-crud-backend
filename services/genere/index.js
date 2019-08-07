@@ -1,60 +1,65 @@
-module.exports = function (fastify, opts, next) {
+module.exports = function(fastify, opts, next) {
   fastify.route({
-    url: '/genere/create',
-    method: 'POST',
+    url: "/genere/create",
+    method: "POST",
     schema: {
       body: {
-        type: 'object',
+        type: "object",
         properties: {
           name: {
-            type: 'string'
-
+            type: "string"
           },
           description: {
-            type: 'string'
+            type: "string"
           }
         },
-        required: ['name', 'description']
+        required: ["name", "description"]
       }
     },
-    preHandler : [fastify.verifySessionId],
-    handler: async function (request, reply) {
-      fastify.createGenere(request.body.name, request.body.description).then(d => {
-        return reply.send(d)
-      }).catch(ex => {
-        fastify.log.error(ex)
-        return reply.status(500).send({
-          message: 'unknown error occured'
+    preHandler: [fastify.verifySessionId],
+    handler: async function(request, reply) {
+      fastify
+        .createGenere(request.body.name, request.body.description)
+        .then(d => {
+          return reply.send(d);
         })
-      })
+        .catch(ex => {
+          fastify.log.error(ex);
+          return reply.status(500).send({
+            message: "unknown error occured"
+          });
+        });
     }
-  })
+  });
 
   fastify.route({
-    url: '/genere/list',
-    method: 'GET',
+    url: "/genere/list",
+    method: "GET",
     schema: {
       querystring: {
-        type: 'object',
+        type: "object",
         properties: {
           id: {
-            type: 'number'
+            type: "number"
           }
         }
       }
     },
-    preHandler : [fastify.verifySessionId],
+    preHandler: [fastify.verifySessionId],
     handler: async (request, reply) => {
-      fastify.listGeneres(request.query.id).then(d => {
-        return reply.send(d)
-      }).catch(ex => {
-        fastify.log.error(ex)
-        return reply.status(500).send({
-          message: 'unknown error occured'
+      fastify
+        .listGeneres(request.query.id)
+        .then(d => {
+          return reply.send(d);
         })
-      })
+        .catch(ex => {
+          fastify.log.error(ex);
+          return reply.status(500).send({
+            message: "unknown error occured"
+          });
+        });
     }
-  })
+  });
 
-  next()
-}
+  next();
+};

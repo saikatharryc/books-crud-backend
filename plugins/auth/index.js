@@ -1,145 +1,160 @@
-const fp = require('fastify-plugin')
-const bcrypt = require('bcrypt')
-const uuid4 = require('uuid/v4')
-const moment = require('moment')
+const fp = require("fastify-plugin");
+const bcrypt = require("bcrypt");
+const uuid4 = require("uuid/v4");
+const moment = require("moment");
 
-module.exports = fp(function (fastify, opts, next) {
+module.exports = fp(function(fastify, opts, next) {
   // define and export generatePasswordHash decorator
-  fastify.decorate('generatePasswordHash', function (inputString) {
+  fastify.decorate("generatePasswordHash", function(inputString) {
     return new Promise((resolve, reject) => {
-      bcrypt.hash(inputString, 8).then((res) => {
-        resolve(res)
-      }).catch((e) => {
-        reject()
-      })
-    })
-  })
+      bcrypt
+        .hash(inputString, 8)
+        .then(res => {
+          resolve(res);
+        })
+        .catch(e => {
+          reject();
+        });
+    });
+  });
 
   // define and export comparePasswordHash decorator
-  fastify.decorate('comparePasswordHash', function (password, inputString) {
+  fastify.decorate("comparePasswordHash", function(password, inputString) {
     return new Promise((resolve, reject) => {
       if (inputString === null) {
-        inputString = ''
+        inputString = "";
       }
-      bcrypt.compare(password, inputString).then((res) => {
-        resolve(res)
-      }).catch((e) => {
-        reject()
-      })
-    })
-  })
+      bcrypt
+        .compare(password, inputString)
+        .then(res => {
+          resolve(res);
+        })
+        .catch(e => {
+          reject();
+        });
+    });
+  });
 
-  fastify.decorate('verifySessionId', function (request, reply, done) {
-    const sessionId = request.headers['x-session-id']
+  fastify.decorate("verifySessionId", function(request, reply, done) {
+    const sessionId = request.headers["x-session-id"];
 
     if (sessionId === undefined || sessionId === null) {
       reply.status(400).send({
         statusCode: 400,
-        errorCode: 'NO_SESSIONID',
-        message: 'Request does not contain x-session-id header'
-      })
+        errorCode: "NO_SESSIONID",
+        message: "Request does not contain x-session-id header"
+      });
     } else {
-      fastify.getSessionId(sessionId).then((r) => {
-        request['session'] = r
-        r['sessionId'] = sessionId
-        return done()
-      }).catch((e) => {
-        reply.status(400).send({
-          statusCode: 400,
-          errorCode: 'INVALID_SESSIONID',
-          message: 'Invalid x-session-id'
+      fastify
+        .getSessionId(sessionId)
+        .then(r => {
+          request["session"] = r;
+          r["sessionId"] = sessionId;
+          return done();
         })
-      })
+        .catch(e => {
+          reply.status(400).send({
+            statusCode: 400,
+            errorCode: "INVALID_SESSIONID",
+            message: "Invalid x-session-id"
+          });
+        });
     }
-  })
+  });
 
   // get session key from redis
-  fastify.decorate('getSessionId', session_id => {
+  fastify.decorate("getSessionId", session_id => {
     return new Promise((resolve, reject) => {
-      fastify.redis.get(session_id, function (err, result) {
+      fastify.redis.get(session_id, function(err, result) {
         if (result === null || err !== null) {
-          reject('Session ID not found')
+          reject("Session ID not found");
         } else {
-          resolve(JSON.parse(result))
+          resolve(JSON.parse(result));
         }
-      })
-    })
-  })
+      });
+    });
+  });
 
   // add session key/val in redis
-  fastify.decorate('setSessionId', (value) => {
+  fastify.decorate("setSessionId", value => {
     return new Promise((resolve, reject) => {
-      const session_id = uuid4()
-      console.log(value.ref)
-      value['loginTime'] = moment.utc().format()
-      fastify.redis.set(session_id, JSON.stringify(value), function (err, result) {
+      const session_id = uuid4();
+      console.log(value.ref);
+      value["loginTime"] = moment.utc().format();
+      fastify.redis.set(session_id, JSON.stringify(value), function(
+        err,
+        result
+      ) {
         if (result === null) {
-          reject('Session ID not stored')
+          reject("Session ID not stored");
         }
-        fastify.redis.expire(session_id, process.env['SESSION_TTL_SECS'])
-        fastify.redis.smembers(value.userid, function (err, useridkey) {
-          fastify.redis.sadd(value.userid, session_id, function (err, saddres) {
+        fastify.redis.expire(session_id, process.env["SESSION_TTL_SECS"]);
+        fastify.redis.smembers(value.userid, function(err, useridkey) {
+          fastify.redis.sadd(value.userid, session_id, function(err, saddres) {
             if (err) {
-              reject()
+              reject();
             }
-            resolve(session_id)
-          })
-        })
-      })
-    })
-  })
+            resolve(session_id);
+          });
+        });
+      });
+    });
+  });
 
   // remove session key from redis
-  fastify.decorate('removeSessionId', (session_id) => {
+  fastify.decorate("removeSessionId", session_id => {
     return new Promise((resolve, reject) => {
-      fastify.redis.get(session_id, function (err, result) {
+      fastify.redis.get(session_id, function(err, result) {
         if (result === null) {
-          reject('Session ID not found')
+          reject("Session ID not found");
         } else {
-          const getResult = JSON.parse(result)
-          fastify.redis.del(session_id, function (err, result) {
+          const getResult = JSON.parse(result);
+          fastify.redis.del(session_id, function(err, result) {
             if (result === null && getResult !== null) {
-              reject('Session ID not removed')
+              reject("Session ID not removed");
             }
-            fastify.redis.smembers(getResult.userid, function (err, useridkey) {
-              fastify.redis.srem(getResult.userid, session_id, function (err, srem) {
-                resolve(result)
-              })
-            })
-          })
+            fastify.redis.smembers(getResult.userid, function(err, useridkey) {
+              fastify.redis.srem(getResult.userid, session_id, function(
+                err,
+                srem
+              ) {
+                resolve(result);
+              });
+            });
+          });
         }
-      })
-    })
-  })
+      });
+    });
+  });
 
   // get user activity data
-  fastify.decorate('sessionList', function (user_id) {
+  fastify.decorate("sessionList", function(user_id) {
     return new Promise((resolve, reject) => {
-      var sessionActivity = []
-      fastify.redis.smembers(user_id, function (err, result) {
+      var sessionActivity = [];
+      fastify.redis.smembers(user_id, function(err, result) {
         if (result instanceof Array === true && result.length > 0) {
           for (let i = 0; i < result.length; i++) {
-            fastify.redis.get(result[i], function (err, data) {
+            fastify.redis.get(result[i], function(err, data) {
               // console.log(result[i], data)
               if (data === null) {
-                fastify.redis.srem(user_id, result[i])
+                fastify.redis.srem(user_id, result[i]);
               } else {
                 sessionActivity.push({
                   sessionid: result[i],
                   sessiondata: JSON.parse(data)
-                })
+                });
               }
-              if (i === (result.length - 1)) {
-                resolve(sessionActivity)
+              if (i === result.length - 1) {
+                resolve(sessionActivity);
               }
-            })
+            });
           }
         } else {
-          resolve([])
+          resolve([]);
         }
-      })
-    })
-  })
+      });
+    });
+  });
 
-  next()
-})
+  next();
+});
