@@ -72,7 +72,45 @@ module.exports = function (fastify, opts, next) {
       })
     }
   })
-
+  fastify.route({
+    url: '/book/edit',
+    method: 'POST',
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          book_id:{
+            type:'number'
+          },
+          title: {
+            type: 'string'
+          },
+          summary: {
+            type: 'string'
+          }
+        },
+        required: ['book_id','title']
+      }
+    },
+    // preHandler : [fastify.verifySessionId],
+    handler: async (request, reply) => {
+      const updatedData= {
+        title:request.query.title
+      }
+      if(request.query.summary){
+        updatedData['summary']= request.query.summary
+      }
+      fastify.editBook(updatedData, request.query.book_id).then(d => {
+        return reply.send(d)
+      }).catch(ex => {
+        fastify.log.error(ex)
+        return reply.status(500).send({
+          message: 'unknown error occured'
+        })
+      })
+    }
+  })
+  
   fastify.route({
     url: '/book/add/author',
     method: 'POST',
@@ -133,5 +171,65 @@ module.exports = function (fastify, opts, next) {
     }
   })
 
+
+  
+  fastify.route({
+    url: '/book/remove/genere',
+    method: 'POST',
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          genere_id: {
+            type: 'number'
+          },
+          book_id: {
+            type: 'number'
+          }
+        },
+        required: ['genere_id', 'book_id']
+      }
+    },
+    // preHandler : [fastify.verifySessionId],
+    handler: async (request, reply) => {
+      fastify.removeGenereFromBook(request.query.genere_id, request.query.book_id).then(d => {
+        return reply.send(d)
+      }).catch(ex => {
+        fastify.log.error(ex)
+        return reply.status(500).send({
+          message: 'unknown error occured'
+        })
+      })
+    }
+  })
+  fastify.route({
+    url: '/book/remove/author',
+    method: 'POST',
+    schema: {
+      body: {
+        type: 'object',
+        properties: {
+          author_id: {
+            type: 'number'
+          },
+          book_id: {
+            type: 'number'
+          }
+        },
+        required: ['author_id', 'book_id']
+      }
+    },
+    // preHandler : [fastify.verifySessionId],
+    handler: async (request, reply) => {
+      fastify.removeAuthorFromBook(request.query.author_id, request.query.book_id).then(d => {
+        return reply.send(d)
+      }).catch(ex => {
+        fastify.log.error(ex)
+        return reply.status(500).send({
+          message: 'unknown error occured'
+        })
+      })
+    }
+  })
   next()
 }

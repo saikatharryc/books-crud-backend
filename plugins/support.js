@@ -140,5 +140,32 @@ module.exports = fp(function (fastify, opts, next) {
     return fastify.sql.models.bookGenere.bulkCreate(rowD)
   })
 
+  /**
+   *  Removes Genere from Books record
+   *  @param { String } genere_id
+   *  @param { String } book_id
+   */
+  fastify.decorate('removeGenereFromBook',(genere_id,book_id)=>{
+    return fastify.sql.models.bookGenere.destroy({where:{genere_id:genere_id,book_id:book_id}})
+  })
+
+  /**
+   *  Removes Author from Books record
+   *  @param { String } author_id
+   *  @param { String } book_id
+   */
+  fastify.decorate('removeAuthorFromBook',(author_id,book_id)=>{
+    return fastify.sql.models.bookAuthor.destroy({where:{author_id:author_id,book_id:book_id}})
+  })
+
+  /**
+   *  Edits Book Record
+   *  @param { Object } updated_data
+   *  @param { String } book_id
+   */
+  fastify.decorate('editBook',(updated_data,book_id)=>{
+    return fastify.sql.models.Book.update({...updated_data},{where:{id:book_id}});
+  });
+
   next()
 })
