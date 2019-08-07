@@ -1,5 +1,4 @@
 module.exports = function (fastify, opts, next) {
-    
     fastify.route({
         url: '/book/create',
         method: 'POST',
@@ -35,7 +34,7 @@ module.exports = function (fastify, opts, next) {
         handler: async function (request, reply) {
             const bookData ={
                 title:request.body.title,
-                summery:summery.body.summery
+                summery:request.body.summery
             }
             fastify.createBook(bookData,request.body.genere_ids, request.body.author_ids).then(d=>{
                 return reply.send(d);
