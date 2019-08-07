@@ -10,8 +10,6 @@
     "test": "tap test/**/*.test.js",
     "start": "fastify start -l info app.js",
     "dev": "fastify start -l info -P app.js",
-    "precommit": "pretty-quick --staged",
-    "postcommit": "git update-index -g",
     "pretty": "prettier --write \"./**/*.{js,jsx,json}\""
   },
   "keywords": [],
@@ -34,7 +32,14 @@
   },
   "devDependencies": {
     "tap": "^12.5.3",
+    "husky": "^2.3.0",
     "prettier": "1.17.1",
     "pretty-quick": "^1.11.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged",
+      "post-commit": "git update-index -g"
+    }
   }
 }
