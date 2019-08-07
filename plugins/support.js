@@ -13,7 +13,7 @@ module.exports = fp(function (fastify, opts, next) {
    * @param { Array } genereIds  array of genere Ids
    * @param { Array } authorIds  Array of Author Ids
    */
-  fastify.decorate('createBooks', async (bookData,genereIds,authorIds)=> {
+  fastify.decorate('createBook', async (bookData,genereIds,authorIds)=> {
     const genereArr = []
     const authorArr =[]
     const book_doc= await fastify.sql.models.Book.create({
@@ -49,8 +49,8 @@ module.exports = fp(function (fastify, opts, next) {
    * @param { String } description 
    * 
    */
-  fastify.decorate('createGenere', ( name, description)=>{
-    return fastify.sql.models.Genere.create({name,description});
+  fastify.decorate('createGenere', async( name, description)=>{
+    return await fastify.sql.models.Genere.create({name:name,description:description});
   })
 
   /*
@@ -59,8 +59,8 @@ module.exports = fp(function (fastify, opts, next) {
    * @param { String } description 
    * 
    */
-  fastify.decorate('createAuthor', ( name, age)=>{
-    return fastify.sql.models.Author.create({name,age});
+  fastify.decorate('createAuthor', async( name, age)=>{
+    return await fastify.sql.models.Author.create({full_name:name,age:age});
   })
 
 
